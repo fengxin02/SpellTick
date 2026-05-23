@@ -30,7 +30,7 @@ mock_game_data = {
                 "summonerSpellTwo": {"displayName": "Teleport"}
             },
             "runes": {"perkIds": [8005, 9111, 9104, 8299, 8444, 5007]},
-            "items": []  
+            "items": [{"itemID": 3158}]  
         },
         {
             "summonerName": "EnemyLeeSin",

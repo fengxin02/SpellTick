@@ -258,9 +258,84 @@
     color: var(--text-dim);
   }
   .empty-state .icon { font-size: 56px; margin-bottom: var(--space-md); }
+
+  /* toast notifications */
+  .toast-container {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    pointer-events: none;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .toast {
+    background: var(--card-bg);
+    border: 2px solid var(--card-border);
+    border-radius: 16px;
+    padding: 12px 16px;
+    box-shadow: 0 6px 24px rgba(120,100,70,0.18);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Nunito', 'PingFang SC', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    pointer-events: auto;
+    cursor: pointer;
+    transform: translateY(-120%);
+    opacity: 0;
+    transition: transform .35s cubic-bezier(0.16, 1, 0.3, 1), opacity .25s ease-out;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .toast.dismissing {
+    transform: translateY(-120%);
+    opacity: 0;
+  }
+
+  .toast-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .toast-champ {
+    font-weight: 800;
+    color: #6b5c4a;
+  }
+
+  .toast-spell {
+    font-weight: 700;
+  }
+  .toast[data-spell="Flash"]     .toast-spell { color: var(--flash); }
+  .toast[data-spell="Teleport"]  .toast-spell { color: var(--tp); }
+  .toast[data-spell="Ignite"]    .toast-spell { color: var(--ignite); }
+  .toast[data-spell="Smite"]     .toast-spell { color: var(--smite); }
+  .toast[data-spell="Heal"]      .toast-spell { color: var(--heal); }
+  .toast[data-spell="Ghost"]     .toast-spell { color: var(--ghost); }
+  .toast[data-spell="Exhaust"]   .toast-spell { color: #c89848; }
+  .toast[data-spell="Barrier"]   .toast-spell { color: #d4a858; }
+  .toast[data-spell="Cleanse"]   .toast-spell { color: #68c4b8; }
+
+  .toast-label {
+    color: #5cb860;
+    font-weight: 700;
+  }
 </style>
 </head>
 <body>
+
+<div class="toast-container" id="toastContainer"></div>
 
 <header>
   <h1>SpellTick</h1>
@@ -316,10 +391,47 @@ function tick(key) {
     if (remaining <= 0) {
         stopTimer(key);
         resetButtonUI(key);
+        showToast(key);
         return;
     }
 
     updateButtonUI(key, remaining);
+}
+
+function showToast(key) {
+    const [champion, spellName] = key.split('::');
+    const container = document.getElementById('toastContainer');
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.dataset.spell = spellName;
+    toast.innerHTML = '<span class="toast-icon">🍃</span>'
+        + '<span class="toast-champ">' + escapeHTML(champion) + '</span>'
+        + '<span class="toast-spell">' + escapeHTML(spellName) + '</span>'
+        + '<span class="toast-label">ready!</span>';
+    toast.addEventListener('click', () => dismissToast(toast));
+
+    container.appendChild(toast);
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => toast.classList.add('show'));
+    });
+
+    const autoDismiss = setTimeout(() => dismissToast(toast), 2500);
+    toast._dismissTimer = autoDismiss;
+}
+
+function dismissToast(toast) {
+    if (toast.classList.contains('dismissing')) return;
+    clearTimeout(toast._dismissTimer);
+    toast.classList.add('dismissing');
+    toast.addEventListener('transitionend', () => { if (toast.parentNode) toast.remove(); });
+    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 400);
+}
+
+function escapeHTML(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
 }
 
 function updateButtonUI(key, remaining) {
@@ -469,6 +581,7 @@ function renderPlayers(players) {
         if (remaining <= 0) {
             stopTimer(key);
             resetButtonUI(key);
+            showToast(key);
         } else {
             updateButtonUI(key, remaining);
         }
