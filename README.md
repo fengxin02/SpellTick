@@ -34,7 +34,7 @@ real-time data processing, and cross-device web serving with Python.
 pip install flask requests urllib3
 python app.py
 ```
-2. Start a League of Legends custom/practice game. (Do not use it in other gamem modes)
+2. Start a League of Legends custom/practice game. (Do not use it in other game modes)
 4. Open `http://127.0.0.1:5000` in your browser.
 
 
