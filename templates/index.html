@@ -559,7 +559,9 @@ function renderPlayers(players) {
         const row = document.createElement('div');
         row.className = 'spell-row';
 
-        for (const spell of p.spells) {
+        const spells = [...p.spells].sort((a, b) => a.name === 'Flash' ? 1 : b.name === 'Flash' ? -1 : 0);
+
+        for (const spell of spells) {
             const key = timerKey(p.champion, spell.name);
             const existing = timers.get(key);
             let remaining = 0;

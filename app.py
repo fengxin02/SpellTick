@@ -1,10 +1,17 @@
+import sys
+import os
 import requests
 import urllib3
 from flask import Flask, jsonify, render_template
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-app = Flask(__name__)
+if getattr(sys, 'frozen', False):
+    base_dir = sys._MEIPASS
+else:
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+app = Flask(__name__, template_folder=os.path.join(base_dir, 'templates'))
 
 # Try HTTP first (mock server), then HTTPS (real game)
 LIVE_API_URLS = [
@@ -114,5 +121,5 @@ def index():
 if __name__ == "__main__":
     print("SpellTick — Summoner Spell Timer")
     print("Open http://127.0.0.1:5000 in your browser")
-    print("(Run mock_server.py first for testing without a real game)")
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    print("Mobile: connect to http://<your-ip>:5000 on same network")
+    app.run(host="0.0.0.0", port=5000, debug=False)
