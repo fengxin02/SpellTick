@@ -48,6 +48,36 @@ def get_live_patch_number():
     return "unknown"
 
 
+def get_patch_summener_spell_names(patch):
+    try:
+        response = requests.get(
+            f"https://ddragon.leagueoflegends.com/cdn/{patch}/data/en_US/summoner.json",
+            verify=False,
+            timeout=2,
+        )
+
+        if response.status_code == 200:
+            spell_data = response.json()
+            spells = spell_data.get("data", {})
+            summoner_spell = {}
+
+            for spell in spells.values():
+                spell_name = spell.get("name")
+                cooldown = spell.get("cooldown", [0])[0]
+                summoner_spell[spell_name] = cooldown
+
+            return summoner_spell
+
+        else:
+            # Default names for unknown patches
+            print(f"Patch {patch} not found in DDragon, using default spell names, using defaults.")
+            return BASE_COOLDOWNS.keys()
+    except Exception:
+        print(f"Failed to fetch summoner spell names for patch {patch}, using defaults.")
+        return BASE_COOLDOWNS.keys()
+    
+
+
 def get_live_data():
     for url in LIVE_API_URLS:
         try:
@@ -129,7 +159,10 @@ def index():
 
 
 if __name__ == "__main__":
-    print(get_live_patch_number())
+    patch = get_live_patch_number()
+    print(f"Current patch: {patch}")
+
+    print(get_patch_summener_spell_names(patch))
     print("SpellTick — Summoner Spell Timer")
     print("Open http://127.0.0.1:5000 in your browser")
     print("Mobile: connect to http://<your-ip>:5000 on same network")
