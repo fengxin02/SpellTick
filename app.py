@@ -35,6 +35,15 @@ BASE_COOLDOWNS = {
     "Clarity": 240,
 }
 
+# Some spells have different names in certain patches or due to upgrades, map them to base names 
+# The coodown is the same as the base spell, so we can use the same cooldown values and picture for them.
+UPGRADED_SPELLS_MAPPING = {
+    "Unleashed Teleport": "Teleport",
+    "Primal Smite": "Smite",
+    "Unleashed Smite": "Smite",
+    
+}
+
 COSMIC_INSIGHT_IDS = 8347
 IONIAN_BOOTS_ID = {3158, 223158}
 CRIMSON_LUCIDICY = 3171
@@ -148,6 +157,11 @@ def api_game_data():
             spells = p.get("summonerSpells", {})
             s1 = spells.get("summonerSpellOne", {}).get("displayName", "")
             s2 = spells.get("summonerSpellTwo", {}).get("displayName", "")
+            if s1 in UPGRADED_SPELLS_MAPPING:
+                s1 = UPGRADED_SPELLS_MAPPING[s1]
+            if s2 in UPGRADED_SPELLS_MAPPING:
+                s2 = UPGRADED_SPELLS_MAPPING[s2]
+
             enemies.append(
                 {
                     "champion": p.get("championName", "Unknown"),

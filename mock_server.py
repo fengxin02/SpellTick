@@ -27,7 +27,7 @@ mock_game_data = {
             "championName": "Yasuo",
             "summonerSpells": {
                 "summonerSpellOne": {"displayName": "Flash"},
-                "summonerSpellTwo": {"displayName": "Teleport"}
+                "summonerSpellTwo": {"displayName": "Unleashed Teleport"}
             },
             "runes": {"perkIds": [8005, 9111, 9104, 8299, 8444, 5007]},
             "items": [{"itemID": 3171}]  
